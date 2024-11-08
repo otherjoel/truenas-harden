@@ -93,8 +93,9 @@ Go to *Data Protection | S.M.A.R.T Test | Add*
 
 ## Configure the network
 
-> [!NOTE] For a hardened repository, it is better to use a **fixed IP address** than a DHCP
-> configuration, because a compromised DHCP server can provide malicious DNS settings.
+> [!NOTE] 
+> For a hardened repository, it is better to use a **fixed IP address** than a DHCP configuration,
+> because a compromised DHCP server can provide malicious DNS settings.
 
 ### Global Network Configuration
 
@@ -187,7 +188,6 @@ Go to *Credentials | Local Users*
     * Fill the *Email* field
 
 > [!IMPORTANT]
-
 > System notification are sent by email to the **root** user, so this email address is very
 > important.
     
@@ -258,7 +258,6 @@ Go to *System Settings | Services | SSH* and click on the pencil (<i class="fa f
 > repository.
 
 
-
 ## Configure the mail notification
 
 > [!IMPORTANT]
@@ -287,46 +286,48 @@ chmod 700 /mnt/tank1/veeam
 ```
 
 > [!NOTE]
-Description of shell commands
-1. Create a dataset name **tank1/veeam**
-1. Set dataset description ("veeam hardened repo")
-1. Set compression level to **off** because Veeam backup are already compressed
-1. Set ownership of user **veeam** and group **veeam** on directory **/mnt/tank1/veeam**
-1. Set restrictive user permissions on **/mnt/tank1/veeam**
-{{< /hint >}}
+> Description of shell commands:
+> 1. Create a dataset name **tank1/veeam**
+> 2. Set dataset description ("veeam hardened repo")
+> 3. Set compression level to **off** because Veeam backup are already compressed
+> 4. Set ownership of user **veeam** and group **veeam** on directory **/mnt/tank1/veeam**
+> 5. Set restrictive user permissions on **/mnt/tank1/veeam**
 
-If you really following this guide from scratch, then the dataset **tank1/veeam**
-is empty, then  you can create an **empty snapshot** and **lock it** to prevent deleting by mistake the dataset from the web user interface or with the command `zfs destroy`
+
+If you really following this guide from scratch, then the dataset **tank1/veeam** is empty, then
+you can create an **empty snapshot** and **lock it** to prevent deleting by mistake the dataset from
+the web user interface or with the command `zfs destroy`
 
 ```
 zfs snap tank1/veeam@LOCKED
 zfs hold LOCKED tank1/veeam@LOCKED
 ```
 
-> [!NOTE]
-Description of shell commands
-1. Create a snapshot named **LOCKED** on **tank1/veeam**.
-1. Hold a lock named **LOCKED** on the snapshot. Indeed the name of the snapshot and the name of the lock
-can be different, but it is easier to use twice the same name.
-{{< /hint >}}
+> [!NOTE] 
+> Description of shell commands:
+> 1. Create a snapshot named **LOCKED** on **tank1/veeam**.
+> 2. Hold a lock named **LOCKED** on the snapshot. Indeed the name of the snapshot and the name of
+>    the lock can be different, but it is easier to use twice the same name.
+
 
 > [!NOTE]
-More information about ZFS locked snapshot
-* To lock a snapshot use `zfs hold LOCK_NAME SNAPSHOT_NAME`
-* Snapshot can have multiple locks, each lock must have a different name
-* A locked snapshot cannot be deleted
-* To unlock a snapshot, use `zfs release LOCK_NAME SNAPSHOT_NAME`
-* To list the lock names of a particular snapshot, use `zfs holds SNAPSHOT_NAME`
-* A dataset with a locked snapshot cannot be deleted neither with the webui nor with the `zfs destroy` command, so it avoid human errors.
-{{< /hint >}}
+> More information about ZFS locked snapshot
+> * To lock a snapshot use `zfs hold LOCK_NAME SNAPSHOT_NAME`.
+> * Snapshot can have multiple locks, each lock must have a different name.
+> * A locked snapshot cannot be deleted.
+> * To unlock a snapshot, use `zfs release LOCK_NAME SNAPSHOT_NAME`.
+> * To list the lock names of a particular snapshot, use `zfs holds SNAPSHOT_NAME`.
+> * A dataset with a locked snapshot cannot be deleted, neither with the webui nor with the `zfs 
+>   destroy` command, so it avoids human errors.
 
 
 ## Configure ZFS periodic snapshots
 
-Create 3 periodic (hourly, daily and weekly) ZFS snapshots to recover
-the data if they are deleted or modified.
+Create 3 periodic (hourly, daily and weekly) ZFS snapshots to recover the data if they are deleted
+or modified.
 
 ### Hourly snapshots
+
 Go to **Data Protection | Periodic Snapshot Tasks**
 * *Dataset* **tank1**
 * *Exclude*: stay empty
@@ -341,9 +342,9 @@ Go to **Data Protection | Periodic Snapshot Tasks**
 * *SAVE*
 
 > [!NOTE]
-It is easier to setup the periodic snapshot at the root dataset and
-to enable *recursive* snapshot.
-{{< /hint >}}
+> It is easier to setup the periodic snapshot at the root dataset and to enable *recursive*
+> snapshot.
+
 
 
 ### Daily snapshots
@@ -373,9 +374,8 @@ Go to **Data Protection | Periodic Snapshot Tasks**
 * *SAVE*
 
 > [!NOTE]
-If you have enough disk space, you can use longer retention time.
-The longer the snapshot are kept, the better your safety is.
-{{< /hint >}}
+> If you have enough disk space, you can use longer retention time.  The longer the snapshot are
+> kept, the better your safety is.
 
 
 ## Configure Samba Service
@@ -437,7 +437,9 @@ Go to *Shares | Windows (SMB) Shares | ADD*
 
 ## Add this repository to Veeam Software
 
-See the [documentation of Veeam Backup](https://helpcenter.veeam.com/docs/backup/vsphere/repo_add.html) to add this SAMBA share as a backup target.
+See the [documentation of Veeam
+Backup](https://helpcenter.veeam.com/docs/backup/vsphere/repo_add.html) to add this SAMBA share as a
+backup target.
 
 In the Veeam wizard select
 * **Network attached storage**
@@ -448,34 +450,36 @@ In the Veeam wizard select
 
 ## Hardened the repository
 
-To hardened the backup repository, just remove any possibility to
- remotely destroy the ZFS snapshots.
+To hardened the backup repository, just remove any possibility to remotely destroy the ZFS
+snapshots.
 
 ### Enable password for console access
+
 Go to *System Settings | Advanced | Console | Configure*
 * [ ] Show Text Conosle wihout Password Prompt
 * *SAVE*
 
 
 ### Disconnect IPMI
-If your server has a [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface) interface, **physically disconnect the network cable**.
 
-{{< hint type=warning >}}
-* If a malware takes the control of your management computer,
-it can use the IPMI interface to destroy your backups.
-* Be cautious and just disconnect the cable.
-{{< /hint >}}
+If your server has a [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface)
+interface, **physically disconnect the network cable**.
+
+> [!WARNING]
+> * If a malware takes the control of your management computer, it can use the IPMI interface to
+>   destroy your backups.
+> * Be cautious and just disconnect the cable.
+
 
 
 ### Check that NTP works as expected
+
 * Go to *System Settings | General | NTP Servers*
 
 By default TrueNAS Scale comes with the following NTP servers
 * 0.debian.pool.ntp.org
 * 1.debian.pool.ntp.org
 * 2.debian.pool.ntp.org
-
-
 
 Open a shell
 * Go to *System Settings | Shell*
@@ -492,15 +496,15 @@ Open a shell
 ```
 
 > [!NOTE]
-Do not worry if you have different remote hostnames or IP addresses
-for NTP servers, it is normal because domain names of **ntp.org**
-point to a pool of servers.
-{{< /hint >}}
+> Do not worry if you have different remote hostnames or IP addresses for NTP servers, it is normal
+> because domain names of **ntp.org** point to a pool of servers.
+
 
 
 ### Configure HTTPS
 
-#### Create an Internal Certificat Authority
+#### Create an Internal Certificate Authority
+
 Go to *Credentials | Certificates | Certificates Authorities | Add*
 * *Identifier and Type*
   * *Name*: **hardened-truenas-scale-ca**
@@ -577,17 +581,15 @@ Go to *System Settings | General | GUI | Settings*
 Restart Web Service: *CONFIRM*, *CONTINUE*
 
 
-
 ### Enable Two-Factor Authentication (2FA)
+
 > [!NOTE]
-Two-Factor Authentication is time-based, and requires that the system time
-is set correctly, so check before that NTP works.
-{{< /hint >}}
+> Two-Factor Authentication is time-based, and requires that the system time is set correctly, so
+> check before that NTP works.
 
 * Install an application on your smartphone to generate an
-[One-Time-Password](https://en.wikipedia.org/wiki/One-time_password)
-from a QR-Code.
-For example  [FreeOTP Authenticator](https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp)
+  [One-Time-Password](https://en.wikipedia.org/wiki/One-time_password) from a QR-Code. For example
+  [FreeOTP Authenticator](https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp)
 * Go to *Credentials | 2FA*
 * Keep the default
     * *One-Time Password (OTP) Digits*: 6
@@ -599,25 +601,29 @@ For example  [FreeOTP Authenticator](https://play.google.com/store/apps/details?
 * Use *FreeOTP* to capture the QR code
 * Log out the web interface
 * Test Two-Factor Authentication
-* If something goes wrong you can disable the 2FA from the console
+
+If something goes wrong you can disable the 2FA from the console:
+
 ```
 midclt call auth.twofactor.update '{"enabled": false}'
 ```
 
 ### Disable SSH for normal operations
+
 > [!NOTE]
-Letting SSH service running is dangerous: if someone steals your SSH private
-key and passphrase, he can remotely connect to the backup repository and destroy the data.
-{{< /hint >}}
+
+> Letting SSH service running is dangerous: if someone steals your SSH private key and passphrase,
+> he can remotely connect to the backup repository and destroy the data.
 
 
 #### Check SSH does not automatically start
+
 Go to *System Settings | Services*
 * Check that SSH does not start automatically
 
 #### Stop SSH service on boot
-Add a startup script to stop the SSH service in case it has been enabled
-by mistake
+
+Add a startup script to stop the SSH service in case it has been enabled by mistake:
 
 Go to *System Settings | Advanced | Init/Shutdown Scripts | Add*
 * *Description*: **Stop SSH at startup**
@@ -629,8 +635,8 @@ Go to *System Settings | Advanced | Init/Shutdown Scripts | Add*
 * *SAVE*
 
 #### Stop SSH service at midnight
-To avoid the SSH service stays enabled forever, stop it automatically
-at midnight
+
+To avoid the SSH service stays enabled forever, stop it automatically at midnight
 
 Go to *System Settings | Advanded | Cron Job | Add*
 * *Description*: **stop ssh at midnight**
@@ -673,10 +679,13 @@ Go to *System Settings | Advanded | Cron Job | Add*
 ### Change the message of the day
 
 Go to *System Settings | Advanced | Console | Configure*
-* MOTD Banner: **Hardened repository without remote management, to enable temporary the web interface type "systemctl start nginx"**
+
+* MOTD Banner: **Hardened repository without remote management, to enable temporary the web
+  interface type "systemctl start nginx"**
 * *SAVE*
 
 ## Backup the server configuration
+
 Go to *System Settings | General | Manage Configuration*
 * *DOWNLOAD FILE*
 
@@ -687,34 +696,37 @@ computer boots
 
 
 ## Daily management
-You can temporary enable the web interface to change the configuration
+
+You can temporary enable the web interface to change the configuration.
 
 ### Enable the web interface
+
 Connect to the console and type:
+
 ```
 systemctl start nginx
 ```
 
 > [!NOTE]
-If you forgot to stop the webUI when you have finished your work,
-the cron job will do if for you at midnight
-{{< /hint >}}
+> If you forgot to stop the webUI when you have finished your work, the cron job will do if for you
+> at midnight
 
 
 ### Disable the web interface
+
 To immediately disable the web interface connect to the console and type:
 ```
 systemctl stop nginx
 ```
 
-
 ## Recover data after an attack
-If your Veeam backup files have been altered it means that the
-password to access the SAMBA share has been compromised, so you have
-to change it immediately.
+
+If your Veeam backup files have been altered it means that the password to access the SAMBA share
+has been compromised, so you have to change it immediately.
 
 
 ### Change the password for the veeam account
+
 Go to *Credentials | Local Users | veeam*
   * Unroll the options, click **EDIT**
   * Change *Password*
@@ -723,11 +735,11 @@ Go to *Credentials | Local Users | veeam*
 
 ### Lock the snapshot to preserve the data
 
-It may take few day to audit your system after an attack, therefore it
-is a good idea to lock all snapshots to avoid they are automatically
-deleted when they reached their end of life.
+It may take few day to audit your system after an attack, therefore it is a good idea to lock all
+snapshots to avoid they are automatically deleted when they reached their end of life.
 
 Run the following command in the shell
+
 ```
 for s in `zfs list -r -t snap -H -o name tank1/veeam`; do zfs hold LOCKED $s ; done
 ```
@@ -750,7 +762,7 @@ Go to *Storage | Snapshots*
 * Restore your data.
 
 
-> [!NOTE]
-* The guide for a hardened repository is finished
-* Enjoy your hardened repository, and sleep more peacefully at night.
-{{< /hint >}}
+# The End
+
+Enjoy your hardened repository, and sleep more peacefully at night.
+
