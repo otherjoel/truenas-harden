@@ -65,15 +65,15 @@ Go to *Storage | Create Pool*
   * Click on *SUGGEST LAYOUT* to let TrueNAS guessing the best layout for you.
   In most situations, it will just work very well.
   * Review the proposed layout, then click on *CREATE*
-> [!NOTE]
 
+> [!NOTE]
 > For a backup repository, the following layouts will provide a good balance between IOPS, available
 > space and level of redundancy:
-
-  * 2 to 4 disks: Stripe of mirrors
-  * 6 disks: RaidZ2
-  * 8 to 11 disks: RaidZ3
-  * 12 disks and more: Stripe of Raidz2/Raidz3
+>
+>  * 2 to 4 disks: Stripe of mirrors
+>  * 6 disks: RaidZ2
+>  * 8 to 11 disks: RaidZ3
+>  * 12 disks and more: Stripe of Raidz2/Raidz3
 
 ## Configure SMART Tests
 
@@ -93,11 +93,8 @@ Go to *Data Protection | S.M.A.R.T Test | Add*
 
 ## Configure the network
 
-{{< hint type=note >}}
-For a hardened repository, it is better to use a **fixed IP address** than
-a DHCP configuration, because a compromised DHCP server can provide
-malicious DNS settings.
-{{< /hint >}}
+> [!NOTE] For a hardened repository, it is better to use a **fixed IP address** than a DHCP
+> configuration, because a compromised DHCP server can provide malicious DNS settings.
 
 ### Global Network Configuration
 
@@ -110,18 +107,19 @@ Go to *Network | Global Configuration*
   * [ ] mDNS
   * [ ] WS-Discovery
 
-{{< hint type=note >}}
-For a hardened repository it is preferable to disable any service annoucement
-{{< /hint >}}
+> [!NOTE]
+> For a hardened repository it is preferable to disable any service annoucement.
+
 * *DNS Servers*
   * *Nameserver 1*: **1.1.1.1**
   * *Nameserver 2*: **8.8.8.8**
-{{< hint type=note >}}
-For a hardened server, it is preferable to use the IP addresses of very well known
-and secure public DNS than your own internal DNS server.
-  *  Cloudflare: 1.1.1.1
-  *  Google: 8.8.8.8
-{{< /hint >}}
+
+> [!NOTE]
+> For a hardened server, it is preferable to use the IP addresses of very well known and secure
+> public DNS than your own internal DNS server.
+>  *  Cloudflare: 1.1.1.1
+>  *  Google: 8.8.8.8
+
 * *Default Gateway*
   * Setup *IPv4 (or IPv6) Default Gateway* according to your network
 * *Outbound Network*
@@ -129,17 +127,20 @@ and secure public DNS than your own internal DNS server.
     * Enable **Mail** and **Update**
 * Other Settings
   * *HTTP Proxy*: stay empty
-  {{< hint type=note >}}
-Connecting to Internet through a proxy is a good security practice
-because it prevents malwares to communicate easily with their control
-and command servers, but it is out of the scope of this guide.
-{{< /hint >}}
+
+> [!NOTE]
+> Connecting to Internet through a proxy is a good security practice because it prevents malwares to
+> communicate easily with their control and command servers, but it is out of the scope of this
+> guide.
+
 * *SAVE*
 
 
 
 ### Network Interfaces Configuration
+
 Go to *Network | Interfaces*
+
 * Click on the first interface and configure it as the management interface
   * Management interface
     * *Description*: **management**
@@ -148,19 +149,20 @@ Go to *Network | Interfaces*
     * *Other Settings*
       * [ ] Disable Hardware Offloading
       * *MTU*: **1500**
-{{< hint type=note >}}
-For a hardened repository, it is preferable to keep the default value
-(1500) for the MTU, because using jumbo frame makes the network
-configuration more complex to manage.
-{{< /hint >}}
-      * *IP Addresses*
+
+> [!NOTE]
+> For a hardened repository, it is preferable to keep the default value (1500) for the MTU, because
+> using jumbo frame makes the network configuration more complex to manage.
+
+* *IP Addresses*
         * Add the IP address of the management interface
     * *APPLY*
     * *TEST CHANGES*
-{{< hint type=important >}}
-When you are testing the new network settings, you have 60 seconds to confirm
-that it works by clicking on *SAVE CHANGES*, otherwise the system automatically rolls back to the previous network configuration to avoid kicking you out of the network.
-{{< /hint >}}
+
+> [!IMPORTANT]
+> When you are testing the new network settings, you have 60 seconds to confirm that it works by
+> clicking on *SAVE CHANGES*, otherwise the system automatically rolls back to the previous network
+> configuration to avoid kicking you out of the network.
 
   * Data interface
     * Management interface
@@ -176,25 +178,27 @@ that it works by clicking on *SAVE CHANGES*, otherwise the system automatically 
     * *TEST CHANGES*
     * *SAVE CHANGES*
 
-
 ## Configure the user accounts
 
 ### Setup root account
+
 Go to *Credentials | Local Users*
   * Edit the *root* user
     * Fill the *Email* field
- {{< hint type=important >}}
-System notification are sent by email to the **root** user, so this
-email address is very important.
-{{< /hint >}}
+
+> [!IMPORTANT]
+
+> System notification are sent by email to the **root** user, so this email address is very
+> important.
+    
     * If you wish to use SSH for management, fill also *SSH Public Key*
 
-{{< hint type=note >}}
-SSH is more convenient than the web shell interface to enter commands
-that are missing from the web user interface.
-{{< /hint >}}
+> [!NOTE] 
+> SSH is more convenient than the web shell interface to enter commands that are missing from the
+> web user interface.
 
 ### Create a account for Veeam
+
 Go to *Credentials | Local Groups | Add*
   * *GID*: **10000**
   * *Name*: **veeam**
@@ -228,8 +232,10 @@ Go to *Credentials | Local Users | Add*
 
 
 ## Configure SSH
+
 Go to *System Settings | Services | SSH* and click on the pencil (<i class="fa fa-pencil" aria-hidden="true" title="Pencil"></i>)
-  * Click **ADVANCED SETTINGS**
+
+* Click **ADVANCED SETTINGS**
     * *TCP Port*: **22**
     * [ ] Log in As Root with Password
     * [ ] Allow Password Authentication
@@ -247,19 +253,18 @@ Go to *System Settings | Services | SSH* and click on the pencil (<i class="fa f
    * Toggle the running button to start the SSH service
    **but do not start automatically SSH**
 
-{{< hint type=important >}}
-Do not start automatically SSH because we will disable the SSH service
-later to harden the repository.
-{{< /hint >}}
+> [!IMPORTANT]
+> Do not start automatically SSH because we will disable the SSH service later to harden the
+> repository.
 
 
 
 ## Configure the mail notification
-{{< hint type=important >}}
-Configuring the mail notification is very important, because it will
-be the only way to know that happens (for example if a disk is dying)
-after disabling the web management interface to harden the repository.
-{{< /hint >}}
+
+> [!IMPORTANT]
+> Configuring the mail notification is very important, because it will be the only way to know that
+> happens (for example if a disk is dying) after disabling the web management interface to harden
+> the repository.
 
 #### Edit mail notification
 * Click on the **bell** <i class="fa fa-bell" aria-hidden="true" title="Alert"></i> icon on the top right corner
@@ -281,7 +286,7 @@ chown veeam:veeam /mnt/tank1/veeam
 chmod 700 /mnt/tank1/veeam
 ```
 
-{{< hint type=note >}}
+> [!NOTE]
 Description of shell commands
 1. Create a dataset name **tank1/veeam**
 1. Set dataset description ("veeam hardened repo")
@@ -298,14 +303,14 @@ zfs snap tank1/veeam@LOCKED
 zfs hold LOCKED tank1/veeam@LOCKED
 ```
 
-{{< hint type=note >}}
+> [!NOTE]
 Description of shell commands
 1. Create a snapshot named **LOCKED** on **tank1/veeam**.
 1. Hold a lock named **LOCKED** on the snapshot. Indeed the name of the snapshot and the name of the lock
 can be different, but it is easier to use twice the same name.
 {{< /hint >}}
 
-{{< hint type=note >}}
+> [!NOTE]
 More information about ZFS locked snapshot
 * To lock a snapshot use `zfs hold LOCK_NAME SNAPSHOT_NAME`
 * Snapshot can have multiple locks, each lock must have a different name
@@ -335,7 +340,7 @@ Go to **Data Protection | Periodic Snapshot Tasks**
 * [x] Enabled
 * *SAVE*
 
-{{< hint type=note >}}
+> [!NOTE]
 It is easier to setup the periodic snapshot at the root dataset and
 to enable *recursive* snapshot.
 {{< /hint >}}
@@ -367,7 +372,7 @@ Go to **Data Protection | Periodic Snapshot Tasks**
 * [x] Enabled
 * *SAVE*
 
-{{< hint type=note >}}
+> [!NOTE]
 If you have enough disk space, you can use longer retention time.
 The longer the snapshot are kept, the better your safety is.
 {{< /hint >}}
@@ -486,7 +491,7 @@ Open a shell
 +ns2.euskill.com 193.107.56.120   4 u   33 1024  377   22.541   +0.167   0.538
 ```
 
-{{< hint type=note >}}
+> [!NOTE]
 Do not worry if you have different remote hostnames or IP addresses
 for NTP servers, it is normal because domain names of **ntp.org**
 point to a pool of servers.
@@ -574,7 +579,7 @@ Restart Web Service: *CONFIRM*, *CONTINUE*
 
 
 ### Enable Two-Factor Authentication (2FA)
-{{< hint type=note >}}
+> [!NOTE]
 Two-Factor Authentication is time-based, and requires that the system time
 is set correctly, so check before that NTP works.
 {{< /hint >}}
@@ -600,7 +605,7 @@ midclt call auth.twofactor.update '{"enabled": false}'
 ```
 
 ### Disable SSH for normal operations
-{{< hint type=note >}}
+> [!NOTE]
 Letting SSH service running is dangerous: if someone steals your SSH private
 key and passphrase, he can remotely connect to the backup repository and destroy the data.
 {{< /hint >}}
@@ -690,7 +695,7 @@ Connect to the console and type:
 systemctl start nginx
 ```
 
-{{< hint type=note >}}
+> [!NOTE]
 If you forgot to stop the webUI when you have finished your work,
 the cron job will do if for you at midnight
 {{< /hint >}}
@@ -745,7 +750,7 @@ Go to *Storage | Snapshots*
 * Restore your data.
 
 
-{{< hint type=note >}}
+> [!NOTE]
 * The guide for a hardened repository is finished
 * Enjoy your hardened repository, and sleep more peacefully at night.
 {{< /hint >}}
