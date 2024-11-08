@@ -2,10 +2,10 @@
 
 > [!NOTE]
 > This document is a tutorial [originally written][1] by [Sebastien Blanchet][sb] and included by
-iXsystems in the “Community Tutorials” section of the TrueNAS documentation ([May 2023
-snapshot][ss]). It was later [removed][r] by TrueNAS as they didn’t feel it was accurate to later
-versions of TrueNAS. However, I believe the approach is still fundamentally sound, and will be
-updating the guide for accuracy with TrueNAS SCALE 24.10.0.1 (not done yet).
+> iXsystems in the “Community Tutorials” section of the TrueNAS documentation ([May 2023
+> snapshot][ss]). It was later [removed][r] by TrueNAS as they didn’t feel it was accurate to later
+> versions of TrueNAS. However, I believe the approach is still fundamentally sound, and will be
+> updating the guide for accuracy with TrueNAS SCALE 24.10.0.1 (not done yet).
 
 > [!NOTE]
 > Provided under the [same license][lc] as the original ([Creative Commons BY-NC-SA 4.0][cc]).
@@ -24,72 +24,66 @@ updating the guide for accuracy with TrueNAS SCALE 24.10.0.1 (not done yet).
 
 ## Abstract
 
-This guide explains in details how to create **a Hardened Backup
-Repository** for [VeeamBackup](https://veeam.com) with **TrueNAS Scale**
-that means a repository that will survive to **any remote attack**.
+This guide explains in details how to create **a Hardened Backup Repository** for
+[VeeamBackup](https://veeam.com) with **TrueNAS Scale** that means a repository that will survive
+any remote attack.
 
-The main idea of this guide is **the disabling of the webUI**
-with an inititialisation script and a cron job
-**to prevent remote deletion of the ZFS snapshots**
-that guarantee data immutability.
+The main idea of this guide is the disabling of the webUI with an inititialisation script and a cron
+job; this effectively prevents remote deletion of the ZFS snapshots, guaranteeing data immutability.
 
 The key points are:
+
 * Rely on ZFS snapshots to **guarantee data immutability**
 * Reduce the surface of attack to the minimum
 * When the setup is finished, disable **all remote management interfaces**
 * Remote deletion of snapshots is impossible **even if all the credentials are stolen**.
-* The only way to delete the snapshot is having **physically access to the TrueNAS Server Console**.
-
-
-{{< hint type=note >}}
-This article targets specifically *TrueNAS Scale* and *Veeam Backup*,
-but it may also apply to some extent to [TrueNAS Core](https://www.truenas.com/truenas-core/)
-and/or other backup software.
-{{< /hint >}}
-
+* The only way to delete the snapshot is having **physical access to the TrueNAS Server Console**.
 
 
 ## Installation
 
 Install *TrueNAS Scale 22.02* on a **physical** machine.
+
 * If possible the computer should have at least 2 network interfaces:
   * one dedicated network interface for the management
   * the other one for the data sharing
 
-{{< hint type=important >}}
-A *virtualized* TrueNAS server is not suitable for a hardened backup
-repository because a malware can easily take the control of TrueNAS server and destroy its data after compromising the hypervisor.
-{{< /hint >}}
+> [!IMPORTANT]
+> A *virtualized* TrueNAS server is not suitable for a hardened backup repository because a malware
+> can easily take the control of TrueNAS server and destroy its data after compromising the
+> hypervisor.
 
 ## Create a ZFS pool
+
 Go to *Storage | Create Pool*
   * *Name*: **tank1**
-{{< hint type=note >}}
-Even if you can use any pool name, the guide is easier to
-follow if you use **tank1** as pool name.
-{{< /hint >}}
+
+> [!NOTE]
+> Even if you can use any pool name, the guide is easier to follow if you use **tank1** as pool
+> name.
+
   * Click on *SUGGEST LAYOUT* to let TrueNAS guessing the best layout for you.
   In most situations, it will just work very well.
   * Review the proposed layout, then click on *CREATE*
-{{< hint type=note >}}
-For a backup repository, the following layouts will provide
-a good balance between IOPS, available space and level of redundancy:
+> [!NOTE]
+
+> For a backup repository, the following layouts will provide a good balance between IOPS, available
+> space and level of redundancy:
+
   * 2 to 4 disks: Stripe of mirrors
   * 6 disks: RaidZ2
   * 8 to 11 disks: RaidZ3
   * 12 disks and more: Stripe of Raidz2/Raidz3
-{{< /hint >}}
-
 
 ## Configure SMART Tests
-{{< hint type=note >}}
-[SMART](https://en.wikipedia.org/wiki/S.M.A.R.T.)
-(*Self-Monitoring, Analysis and Reporting Technology*)
-is a monitoring system included in hard disk drives
-to anticipate imminent hardware failures.
-{{< /hint >}}
+
+> [!NOTE]
+> [SMART](https://en.wikipedia.org/wiki/S.M.A.R.T.) (*Self-Monitoring, Analysis and Reporting
+> Technology*) is a monitoring system included in hard disk drives to anticipate imminent hardware
+> failures.
 
 Go to *Data Protection | S.M.A.R.T Test | Add*
+
 * [x] All Disks
 * *Type*: **LONG**
 * *Description*: **Long SMART test**
@@ -98,6 +92,7 @@ Go to *Data Protection | S.M.A.R.T Test | Add*
 
 
 ## Configure the network
+
 {{< hint type=note >}}
 For a hardened repository, it is better to use a **fixed IP address** than
 a DHCP configuration, because a compromised DHCP server can provide
@@ -105,7 +100,9 @@ malicious DNS settings.
 {{< /hint >}}
 
 ### Global Network Configuration
+
 Go to *Network | Global Configuration*
+
 * *Hostname and Domain*
   * Configure **Hostname** and **Domain**
 * *Service Annoucement*
