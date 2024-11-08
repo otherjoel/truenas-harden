@@ -6,8 +6,7 @@
 > snapshot][ss]). It was later [removed][r] by TrueNAS as they didn’t feel it was accurate to later
 > versions of TrueNAS. However, I believe the approach is still fundamentally sound, and will be
 > updating the guide for accuracy with TrueNAS SCALE 24.10.0.1 (not done yet).
-
-> [!NOTE]
+>
 > Provided under the [same license][lc] as the original ([Creative Commons BY-NC-SA 4.0][cc]).
 
 [1]: https://www.truenas.com/community/threads/hardened-backup-repository-with-truenas.97608/
@@ -55,15 +54,14 @@ Install *TrueNAS Scale 22.02* on a **physical** machine.
 
 ## Create a ZFS pool
 
+This guide uses **tank1** as the pool name. You might find it easier to follow along if you use the
+same name.
+
 Go to *Storage | Create Pool*
+  
   * *Name*: **tank1**
-
-> [!NOTE]
-> Even if you can use any pool name, the guide is easier to follow if you use **tank1** as pool
-> name.
-
-  * Click on *SUGGEST LAYOUT* to let TrueNAS guessing the best layout for you.
-  In most situations, it will just work very well.
+  * Click on *SUGGEST LAYOUT* to let TrueNAS guessing the best layout for you.  In most situations,
+    it will just work very well.
   * Review the proposed layout, then click on *CREATE*
 
 > [!NOTE]
@@ -112,14 +110,12 @@ Go to *Network | Global Configuration*
 > For a hardened repository it is preferable to disable any service annoucement.
 
 * *DNS Servers*
-  * *Nameserver 1*: **1.1.1.1**
-  * *Nameserver 2*: **8.8.8.8**
+  * *Nameserver 1*: **1.1.1.1** (Cloudflare)
+  * *Nameserver 2*: **8.8.8.8** (Google)
 
 > [!NOTE]
 > For a hardened server, it is preferable to use the IP addresses of very well known and secure
 > public DNS than your own internal DNS server.
->  *  Cloudflare: 1.1.1.1
->  *  Google: 8.8.8.8
 
 * *Default Gateway*
   * Setup *IPv4 (or IPv6) Default Gateway* according to your network
@@ -128,15 +124,12 @@ Go to *Network | Global Configuration*
     * Enable **Mail** and **Update**
 * Other Settings
   * *HTTP Proxy*: stay empty
+* *SAVE*
 
 > [!NOTE]
 > Connecting to Internet through a proxy is a good security practice because it prevents malwares to
 > communicate easily with their control and command servers, but it is out of the scope of this
 > guide.
-
-* *SAVE*
-
-
 
 ### Network Interfaces Configuration
 
@@ -156,7 +149,7 @@ Go to *Network | Interfaces*
 > using jumbo frame makes the network configuration more complex to manage.
 
 * *IP Addresses*
-        * Add the IP address of the management interface
+    * Add the IP address of the management interface
     * *APPLY*
     * *TEST CHANGES*
 
@@ -191,7 +184,7 @@ Go to *Credentials | Local Users*
 > System notification are sent by email to the **root** user, so this email address is very
 > important.
     
-    * If you wish to use SSH for management, fill also *SSH Public Key*
+    * If you wish to use SSH for management, also fill in the *SSH Public Key*
 
 > [!NOTE] 
 > SSH is more convenient than the web shell interface to enter commands that are missing from the
@@ -465,11 +458,9 @@ Go to *System Settings | Advanced | Console | Configure*
 If your server has a [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface)
 interface, **physically disconnect the network cable**.
 
-> [!WARNING]
-> * If a malware takes the control of your management computer, it can use the IPMI interface to
->   destroy your backups.
-> * Be cautious and just disconnect the cable.
-
+> [!WARNING] 
+> If malware takes the control of your management computer, it can use the IPMI interface to destroy
+> your backups.  Be cautious and just disconnect the cable.
 
 
 ### Check that NTP works as expected
@@ -598,7 +589,7 @@ Restart Web Service: *CONFIRM*, *CONTINUE*
     * [ ] Enable Two-Factor Auth for SSH
 * Click on *Enable Two-Factor Authentication*
 * *SHOW QR*
-* Use *FreeOTP* to capture the QR code
+* Use your smartphone OTP app to capture the QR code
 * Log out the web interface
 * Test Two-Factor Authentication
 
@@ -611,7 +602,6 @@ midclt call auth.twofactor.update '{"enabled": false}'
 ### Disable SSH for normal operations
 
 > [!NOTE]
-
 > Letting SSH service running is dangerous: if someone steals your SSH private key and passphrase,
 > he can remotely connect to the backup repository and destroy the data.
 
@@ -642,7 +632,7 @@ Go to *System Settings | Advanded | Cron Job | Add*
 * *Description*: **stop ssh at midnight**
 * *Command*: **/usr/bin/systemctl stop ssh**
 * *Run as user*: **root**
-* *Schedule*: **daily (0 0 * * *) at 00:00 (12:AM)**
+* *Schedule*: **daily (0 0 \* \* \*) at 00:00 (12:AM)**
 * [X] hide standard output
 * [ ] hide standard error
 * [x] Enabled
@@ -669,7 +659,7 @@ Go to *System Settings | Advanded | Cron Job | Add*
 * *Description*: **stop webUI at midnight**
 * *Command*: **/usr/bin/systemctl stop nginx**
 * *Run as user*: **root**
-* *Schedule*: **daily (0 0 * * *) at 00:00 (12:AM)**
+* *Schedule*: **daily (0 0 \* \* \*) at 00:00 (12:AM)**
 * [X] hide standard output
 * [ ] hide standard error
 * [x] Enabled
